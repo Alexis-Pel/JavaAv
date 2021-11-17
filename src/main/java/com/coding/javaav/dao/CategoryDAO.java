@@ -39,9 +39,9 @@ public class CategoryDAO {
 
 
     // UPDATE CATEGORY
-    public void updateCategory(Category updatedCategory, String idCategory){
-        String requestSQL = "UPDATE category SET name ='" + updatedCategory.getName() + "' WHERE id = " + idCategory + ";";
-        jdbcTemplate.update(requestSQL);
+    public void updateCategory(Category updatedCategory, Integer idCategory){
+        String requestSQL = "UPDATE category SET name=? WHERE id=?;";
+        jdbcTemplate.update(requestSQL, updatedCategory.getName(), idCategory);
     }
 
     //FIND ONE BY ID

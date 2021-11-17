@@ -40,7 +40,7 @@ public class CategoryController {
     // UPDATE CATEGORY
     @PutMapping("")
     @ResponseBody
-    public String updateCategory(@RequestBody Category updatedCategory, @RequestParam String idCategory){
+    public String updateCategory(@RequestBody Category updatedCategory, @RequestParam Integer idCategory){
         categoryService.updateCategory(updatedCategory, idCategory);
         return "Category " + updatedCategory.getName() + " updated !" + idCategory;
     }
