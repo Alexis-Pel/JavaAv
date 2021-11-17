@@ -36,4 +36,13 @@ public class CategoryController {
     }
 
 
+
+    // UPDATE CATEGORY
+    @PutMapping("")
+    @ResponseBody
+    public String updateCategory(@RequestBody Category updatedCategory, @RequestParam String idCategory){
+        categoryService.updateCategory(updatedCategory, idCategory);
+        return "Category " + updatedCategory.getName() + " updated !" + idCategory;
+    }
+
 }

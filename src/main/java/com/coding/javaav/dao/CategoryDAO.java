@@ -25,4 +25,11 @@ public class CategoryDAO {
         String requestSQL = "INSERT INTO category (name) values (?);";
         jdbcTemplate.update(requestSQL, newCategory.getName());
     }
+
+
+    // UPDATE CATEGORY
+    public void updateCategory(Category updatedCategory, String idCategory){
+        String requestSQL = "UPDATE category SET name ='" + updatedCategory.getName() + "' WHERE id = " + idCategory + ";";
+        jdbcTemplate.update(requestSQL);
+    }
 }
