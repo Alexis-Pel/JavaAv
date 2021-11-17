@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import java.util.List;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+//import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 @Repository
 public class CategoryDAO {
@@ -38,19 +38,22 @@ public class CategoryDAO {
 
 
     // UPDATE CATEGORY
-    public void updateCategory(Category updatedCategory, String idCategory) {
-        String requestSQL = "UPDATE category SET name ='" + updatedCategory.getName() + "' WHERE id = " + idCategory + ";";
-        jdbcTemplate.update(requestSQL);
+    public void updateCategory(Category updatedCategory, Integer idCategory){
+        String requestSQL = "UPDATE category SET name=? WHERE id=?;";
+        jdbcTemplate.update(requestSQL, updatedCategory.getName(), idCategory);
+    }
+
+    //FIND ONE BY ID
+    public Category findOne(int id){
+        String sql = "SELECT * FROM category WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, BeanPropertyRowMapper.newInstance(Category.class), id);
     }
 
     // DELETE CATEGORY
-    public String deleteCategory(int delCategory) {
-
-        try {
-            if (delCategory )
-        }
+    public void deleteCategory(int delCategory) {
         String requestSQL = "DELETE FROM category WHERE id=?";
         jdbcTemplate.update(requestSQL,delCategory);
-        return "Category " + delCategory + " deleted";
+        return ;
+                //"Category " + delCategory + " deleted";
     }
 }
