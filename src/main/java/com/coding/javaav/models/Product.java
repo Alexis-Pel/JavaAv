@@ -8,7 +8,7 @@ public class Product {
     private int rating;
     private String name;
     private int categoryId;
-    private Date date;
+    private Date createdAt;
 
     public int getId() {
         return id;
@@ -50,12 +50,12 @@ public class Product {
         this.categoryId = categoryId;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setCreatedAt(Date date) {
+        this.createdAt = date;
     }
 
 }
