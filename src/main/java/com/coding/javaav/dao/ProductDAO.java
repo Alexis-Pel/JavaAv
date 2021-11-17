@@ -7,8 +7,12 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @Repository
 public class ProductDAO {
@@ -98,6 +102,68 @@ public class ProductDAO {
         String sql = "SELECT * FROM product WHERE id = ?";
 
         return jdbcTemplate.queryForObject(sql, BeanPropertyRowMapper.newInstance(Product.class), id);
+    }
+
+    //FILTRE
+    public List<Product> findAllByFilter(String type, String rating, String createdat){
+        Date date;
+        String whereString = "";
+        String[] whereStringTab = new String[3];
+        String[] tab = new String[3];
+
+        int index = 0;
+
+
+        if (type != null && type.length() != 0){
+            whereStringTab[index] = "type = ?";
+            tab[0] = type;
+            index += 1;
+        }
+
+        if (rating != null && rating.length() != 0){
+            try{
+                if(Integer.parseInt(rating) >= 0 && Integer.parseInt(rating) <= 10){
+                    whereStringTab[index] = "rating = ?";
+                    tab[1] = rating;
+                    index+=1;
+                }
+            }
+            catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+        }
+
+        if (createdat != null && createdat.length() != 0){
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.FRENCH);
+            try {
+                date = formatter.parse(createdat);
+                whereStringTab[index] = "createdAt = ?";
+                tab[2] = createdat;
+                index+=1;
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        for (int i = 0; i < whereStringTab.length; i++) {
+            if (whereStringTab[i] != null){
+                whereString += whereStringTab[i];
+                if (i > 0){
+                    whereString+= " AND ";
+                }
+            }
+        }
+
+        String sql = "SELECT * FROM product WHERE " + whereString;
+
+        int finalIndex = 0;
+        for (int i = 0; i < tab.length; i++) {
+            for (int j = 0; j < whereStringTab.length; j++) {
+
+            }
+        }
+        String[] finalTab = new String[finalIndex];
+
+        return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class), type, rating, createdat);
     }
 
 
