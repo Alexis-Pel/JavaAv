@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 @Repository
 public class CategoryDAO {
@@ -14,14 +15,14 @@ public class CategoryDAO {
     private JdbcTemplate jdbcTemplate;
 
     // DISPLAY ALL CATEGORY
-    public List<Category> listAll(){
+    public List<Category> listAll() {
         String sql = "SELECT * FROM category";
         return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Category.class));
     }
 
 
     // ADD CATEGORY
-    public String addCategory(Category newCategory){
+    public String addCategory(Category newCategory) {
         try {
             if (newCategory.getName().length() > 0) {
                 String requestSQL = "INSERT INTO category (name) values (?);";
@@ -30,16 +31,26 @@ public class CategoryDAO {
             } else {
                 return "Le nom ne peut pas être vide";
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return e.getMessage();
         }
     }
 
 
     // UPDATE CATEGORY
-    public void updateCategory(Category updatedCategory, String idCategory){
+    public void updateCategory(Category updatedCategory, String idCategory) {
         String requestSQL = "UPDATE category SET name ='" + updatedCategory.getName() + "' WHERE id = " + idCategory + ";";
         jdbcTemplate.update(requestSQL);
+    }
+
+    // DELETE CATEGORY
+    public String deleteCategory(int delCategory) {
+
+        try {
+            if (delCategory )
+        }
+        String requestSQL = "DELETE FROM category WHERE id=?";
+        jdbcTemplate.update(requestSQL,delCategory);
+        return "Category " + delCategory + " deleted";
     }
 }
