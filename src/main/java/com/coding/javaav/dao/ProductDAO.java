@@ -15,19 +15,24 @@ public class ProductDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private CategoryDAO categoryDAO;
+
     public List<Product> listAll(){
         String sql = "SELECT * FROM product";
         return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class));
     }
 
     // ADD PRODUCT
-    public Product addProduct(Product newProduct){
-        String sql = "INSERT INTO product (type, rating, name, createdAt, categoryId) values (?) (?) (?) (?) (?);";
+    public String addProduct(Product newProduct){
+        String sql = "INSERT INTO product (type, rating, name, createdAt, categoryId) values (?, ?, ?, ?, ?);";
         String type;
         int rating;
         String name;
         int categoryId;
         Date createdAt;
+        Object message;
+        int res;
 
         try {
             name = newProduct.getName();
@@ -63,9 +68,7 @@ public class ProductDAO {
 
         try{
             categoryId = newProduct.getCategoryId();
-            CategoryDAO service = new CategoryDAO();
-
-            if(service.findOne(categoryId) == null){
+            if(categoryDAO.findOne(categoryId) == null){
                 categoryId = -1;
             }
         }
@@ -82,10 +85,18 @@ public class ProductDAO {
 
 
         if (name != null && type != null && rating != -1 && categoryId != -1 && createdAt != null ){
-            return jdbcTemplate.queryForObject(sql, BeanPropertyRowMapper.newInstance(Product.class), type, rating, name, createdAt, categoryId);
+            res = jdbcTemplate.update(sql, type, rating, name, createdAt, categoryId);
         }
-        System.out.println(name + " " + type + " " + rating + " " + categoryId + " " + createdAt +" ");
-        return newProduct;
+        else {
+            res = 0;
+        }
+
+        if (res == 1){
+            return "Product Added";
+        }
+        else{
+            return "Error in arguments";
+        }
     }
 
     //FIND ONE BY ID

@@ -1,7 +1,6 @@
 package com.coding.javaav.dao;
 
 import com.coding.javaav.models.Category;
-import com.coding.javaav.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -46,7 +45,7 @@ public class CategoryDAO {
 
     //FIND ONE BY ID
     public Category findOne(int id){
-        String sql = "SELECT * FROM category WHERE id = " + id;
-        return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Category.class)).get(0);
+        String sql = "SELECT * FROM category WHERE id = ?";
+        return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Category.class), id).get(0);
     }
 }
