@@ -6,9 +6,12 @@ import com.coding.javaav.models.Category;
 import com.coding.javaav.models.Product;
 import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+//import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -34,6 +37,47 @@ public class CategoryController {
     public String addCategory(@RequestBody Category newCategory){
         return categoryService.addCategory(newCategory);
     }
+
+    // DELETE CATEGORY
+
+    @DeleteMapping("")
+    @ResponseBody
+    public HttpStatus deleteCategory(@RequestParam int id, Category CategoryId) {
+        boolean isInTable = false;
+        System.out.println(CategoryId.getId());
+        if (CategoryId.getId() == id) {
+            isInTable = true;
+        }
+        if (isInTable) {
+            System.out.println("Category deleted");
+            return HttpStatus.NO_CONTENT;
+        } else {
+            System.out.println("Category not found");
+            return HttpStatus.BAD_REQUEST;
+        }
+
+    }
+
+    /*
+    @DeleteMapping("")
+    @ResponseBody
+    public String deleteCategory(@RequestParam int id, Category CategoryId) {
+        boolean isInTable = false;
+        System.out.println(CategoryId.getId());
+        if (CategoryId.getId() == id) {
+            isInTable = true;
+        }
+        if (isInTable) {
+            System.out.println("Category deleted");
+            return categoryService.deleteCategory(id);
+        } else {
+            System.out.println("Category not found");
+            return "Category not found on :: " + id;
+        }
+
+    }
+*/
+
 
 
 
