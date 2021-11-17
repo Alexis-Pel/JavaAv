@@ -32,13 +32,13 @@ public class ProductController {
 
     // GET ONE PRODUCT
     @GetMapping("/{id}")
-    public ResponseEntity.BodyBuilder showOne(@PathVariable(value="id") int id){
+    public Product showOne(@PathVariable(value="id") int id){
         Product product = productService.findOne(id);
         if (product==null){
-            return (ResponseEntity.BodyBuilder) ResponseEntity.notFound();
+            return null;
         }
         else{
-            return (ResponseEntity.BodyBuilder) ResponseEntity.ok().body(productService.findOne(id));
+            return productService.findOne(id);
         }
     }
 

@@ -46,6 +46,6 @@ public class CategoryDAO {
     //FIND ONE BY ID
     public Category findOne(int id){
         String sql = "SELECT * FROM category WHERE id = ?";
-        return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Category.class), id).get(0);
+        return jdbcTemplate.queryForObject(sql, BeanPropertyRowMapper.newInstance(Category.class), id);
     }
 }
