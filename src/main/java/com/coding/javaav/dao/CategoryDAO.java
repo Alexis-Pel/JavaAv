@@ -13,8 +13,16 @@ public class CategoryDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    // DISPLAY ALL CATEGORY
     public List<Category> listAll(){
         String sql = "SELECT * FROM category";
         return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Category.class));
+    }
+
+
+    // ADD CATEGORY
+    public void addCategory(Category newCategory){
+        String requestSQL = "INSERT INTO category (name) values (?);";
+        jdbcTemplate.update(requestSQL, newCategory.getName());
     }
 }
