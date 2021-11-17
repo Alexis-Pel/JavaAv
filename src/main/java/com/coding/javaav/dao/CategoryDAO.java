@@ -21,9 +21,19 @@ public class CategoryDAO {
 
 
     // ADD CATEGORY
-    public void addCategory(Category newCategory){
-        String requestSQL = "INSERT INTO category (name) values (?);";
-        jdbcTemplate.update(requestSQL, newCategory.getName());
+    public String addCategory(Category newCategory){
+        try {
+            if (newCategory.getName().length() > 0) {
+                String requestSQL = "INSERT INTO category (name) values (?);";
+                jdbcTemplate.update(requestSQL, newCategory.getName());
+                return "Category " + newCategory.getName() + " created !";
+            } else {
+                return "Le nom ne peut pas être vide";
+            }
+        }
+        catch (Exception e){
+            return e.getMessage();
+        }
     }
 
 
