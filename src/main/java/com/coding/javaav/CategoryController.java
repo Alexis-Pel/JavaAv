@@ -3,6 +3,7 @@ package com.coding.javaav;
 import com.coding.javaav.dao.CategoryDAO;
 import com.coding.javaav.dao.ProductDAO;
 import com.coding.javaav.models.Category;
+import com.coding.javaav.models.Product;
 import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,5 +44,13 @@ public class CategoryController {
         categoryService.updateCategory(updatedCategory, idCategory);
         return "Category " + updatedCategory.getName() + " updated !" + idCategory;
     }
+
+    // GET ONE CATEGORY
+    @GetMapping("/{id}")
+    @ResponseBody
+    public Category showOne(@PathVariable(value="id") int id){
+        return categoryService.findOne(id);
+    }
+
 
 }
