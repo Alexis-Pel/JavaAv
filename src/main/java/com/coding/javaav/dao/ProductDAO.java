@@ -184,7 +184,7 @@ public class ProductDAO {
                 if(Integer.toString(allProduct.getRating()).equals(ratingFinal)){
                     numberOfResults++;
                 }
-                whereString += whereStringTab[i];
+                //whereString += whereStringTab[i];
             }
         }
         //Si typeFinak et ratingFinal sont null
@@ -293,15 +293,9 @@ public class ProductDAO {
     }
 
     // PRODUCT ORDER
-    public List<Product> getAllProduct(Integer pageNo, String sortBy){
-        Pageable pages = PageRequest.of(pageNo, 10, Sort.by(sortBy));
-        Page<Product> pageResult = categoryDAO.listAll();
-
-        if (pageResult.hasContent()){
-            return pageResult.getContent();
-        } else {
-            return new ArrayList<Product>();
-        }
+    public List<Product> getAllProduct(Integer start, Integer end){
+        String sql = "SELECT * FROM product LIMIT ? OFFSET ?";
+        return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class), end, start);
     }
 
 }

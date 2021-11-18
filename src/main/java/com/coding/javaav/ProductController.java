@@ -88,10 +88,25 @@ public class ProductController {
     }
 
     // PRODUCT ORDER
-    @GetMapping("/orders/{range}")
-    public ResponseEntity<List<Product>> getAllProduct(@RequestParam Integer pageNo, @RequestParam String sortBy){
-        List<Product> list = productService.getAllProduct(pageNo, sortBy);
-        return new ResponseEntity<List<Product>>(list, new HttpHeaders(), HttpStatus.OK);
+    @GetMapping("/orders")
+    public ResponseEntity<List<Product>> getAllProduct(@RequestParam String range){
+        System.out.println(range);
+
+        String split = "-";
+        String[] arg = range.split(split);
+        int start = Integer.parseInt(arg[0]);
+        int end = Integer.parseInt(arg[1]);
+
+        List<Product> result = productService.getAllProduct(start, end);
+
+        int x = end + start;
+        String reply = String.valueOf(end) + "/" + String.valueOf(x);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Range:", reply);
+        headers.add("Accept-Range:", "product: " + end);
+
+        return new ResponseEntity<>(result, headers, HttpStatus.OK);
 
     }
 }
