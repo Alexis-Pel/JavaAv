@@ -1,6 +1,5 @@
 package com.coding.javaav.dao;
 
-import com.coding.javaav.models.Category;
 import com.coding.javaav.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -23,6 +21,7 @@ public class ProductDAO {
     @Autowired
     private CategoryDAO categoryDAO;
 
+    // SHOW ALL PRODUCT
     public List<Product> listAll() {
         String sql = "SELECT * FROM product";
         return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class));
@@ -106,17 +105,20 @@ public class ProductDAO {
 
     //FILTRE
     public List<Product> findAllByFilter(String type, String rating, String createdat){
+        //A faire : intervalles
         Date date;
         String whereString = "";
         String[] whereStringTab = new String[3];
-        String[] tab = new String[3];
+        String typeFinal = null;
+        String ratingFinal = null;
+        String createDateFinal = null;
 
         int index = 0;
 
 
         if (type != null && type.length() != 0){
             whereStringTab[index] = "type = ?";
-            tab[0] = type;
+            typeFinal = type;
             index += 1;
         }
 
@@ -124,7 +126,7 @@ public class ProductDAO {
             try{
                 if(Integer.parseInt(rating) >= 0 && Integer.parseInt(rating) <= 10){
                     whereStringTab[index] = "rating = ?";
-                    tab[1] = rating;
+                    ratingFinal = rating;
                     index+=1;
                 }
             }
@@ -137,33 +139,57 @@ public class ProductDAO {
             SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.FRENCH);
             try {
                 date = formatter.parse(createdat);
+                String year = Integer.toString(date.getYear()+1900);
+                String month = Integer.toString(date.getMonth()+1);
+                String day = Integer.toString(date.getDate());
+                createDateFinal = year+"-"+month+"-"+day+"-";
                 whereStringTab[index] = "createdAt = ?";
-                tab[2] = createdat;
                 index+=1;
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
+
+        int trouve = 0;
         for (int i = 0; i < whereStringTab.length; i++) {
             if (whereStringTab[i] != null){
-                whereString += whereStringTab[i];
-                if (i > 0){
+                trouve+=1;
+                if (trouve == 2 || trouve == 3){
                     whereString+= " AND ";
                 }
+                whereString += whereStringTab[i];
             }
         }
 
         String sql = "SELECT * FROM product WHERE " + whereString;
 
-        int finalIndex = 0;
-        for (int i = 0; i < tab.length; i++) {
-            for (int j = 0; j < whereStringTab.length; j++) {
-
-            }
+        String[] finalTab = new String[index];
+        int h = 0;
+        if(typeFinal != null){
+            finalTab[h] = typeFinal;
+            h++;
         }
-        String[] finalTab = new String[finalIndex];
+        if(ratingFinal != null){
+            finalTab[h] = ratingFinal;
+            h++;
+        }
+        if(createDateFinal != null){
+            finalTab[h] = createDateFinal;
+        }
 
-        return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class), type, rating, createdat);
+        System.out.println(finalTab[0]);
+        if (finalTab.length == 1){
+            return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class), finalTab[0]);
+        }
+        else if (finalTab.length == 2){
+            return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class), finalTab[0], finalTab[1]);
+        }
+        else if(finalTab.length == 3){
+            return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class), finalTab[0], finalTab[1], finalTab[2]);
+        }
+        else {
+            return null;
+        }
     }
 
 
