@@ -42,43 +42,20 @@ public class CategoryController {
 
     @DeleteMapping("")
     @ResponseBody
-    public HttpStatus deleteCategory(@RequestParam int id, Category CategoryId) {
+    public HttpStatus deleteCategory(@RequestParam int id) {
         boolean isInTable = false;
-        System.out.println(CategoryId.getId());
-        if (CategoryId.getId() == id) {
-            isInTable = true;
-        }
+        System.out.println(id);
+        System.out.println(categoryService.deleteCategory(id));
+        isInTable = categoryService.deleteCategory(id);
         if (isInTable) {
             System.out.println("Category deleted");
             return HttpStatus.NO_CONTENT;
         } else {
             System.out.println("Category not found");
-            return HttpStatus.BAD_REQUEST;
+            return HttpStatus.NOT_FOUND;
         }
 
     }
-
-    /*
-    @DeleteMapping("")
-    @ResponseBody
-    public String deleteCategory(@RequestParam int id, Category CategoryId) {
-        boolean isInTable = false;
-        System.out.println(CategoryId.getId());
-        if (CategoryId.getId() == id) {
-            isInTable = true;
-        }
-        if (isInTable) {
-            System.out.println("Category deleted");
-            return categoryService.deleteCategory(id);
-        } else {
-            System.out.println("Category not found");
-            return "Category not found on :: " + id;
-        }
-
-    }
-*/
-
-
 
 
     // UPDATE CATEGORY
@@ -95,6 +72,5 @@ public class CategoryController {
     public Category showOne(@PathVariable(value="id") int id){
         return categoryService.findOne(id);
     }
-
-
+    
 }

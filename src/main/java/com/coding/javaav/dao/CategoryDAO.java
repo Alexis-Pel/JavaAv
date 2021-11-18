@@ -50,10 +50,14 @@ public class CategoryDAO {
     }
 
     // DELETE CATEGORY
-    public void deleteCategory(int delCategory) {
-        String requestSQL = "DELETE FROM category WHERE id=?";
-        jdbcTemplate.update(requestSQL,delCategory);
-        return ;
-                //"Category " + delCategory + " deleted";
+    public boolean deleteCategory(int delCategory) {
+        String delSQL = "DELETE FROM category WHERE id=?";
+        String selSQL = "SELECT * FROM category WHERE id=?";
+        if (jdbcTemplate.queryForObject(selSQL, BeanPropertyRowMapper.newInstance(Category.class), delCategory) != null) {
+            jdbcTemplate.update(delSQL, delCategory);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
