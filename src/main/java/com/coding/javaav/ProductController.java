@@ -8,8 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/products")
@@ -19,9 +20,16 @@ public class ProductController {
     private ProductDAO productService;
 
     // GET ALL PRODUCT
+    // SEARCH
     @GetMapping("")
-    public List<Product> index(Model model) {
-        return productService.listAll();
+    public List<Product> index(@RequestParam(required = false) String type, @RequestParam(required = false) String rating, @RequestParam(required = false) String createdat){
+
+        if (type == null && rating == null && createdat == null) {
+            return productService.listAll();
+        }
+        else{
+            return productService.findAllByFilter(type, rating, createdat);
+        }
     }
 
 
