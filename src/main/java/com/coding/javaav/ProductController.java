@@ -1,13 +1,15 @@
 package com.coding.javaav;
 
-
+import com.coding.javaav.dao.ProductDAO;
 import com.coding.javaav.models.Product;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.coding.javaav.dao.ProductDAO;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/products")
@@ -69,4 +71,11 @@ public class ProductController {
         }
     }
 
+    // PRODUCT ORDER
+    @GetMapping("/orders/{range}")
+    public ResponseEntity<List<Product>> getAllProduct(@RequestParam Integer pageNo, @RequestParam String sortBy){
+        List<Product> list = productService.getAllProduct(pageNo, sortBy);
+        return new ResponseEntity<List<Product>>(list, new HttpHeaders(), HttpStatus.OK);
+
+    }
 }
