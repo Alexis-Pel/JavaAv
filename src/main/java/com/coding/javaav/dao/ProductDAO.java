@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,81 +31,31 @@ public class ProductDAO {
     // ADD PRODUCT
     public String addProduct(Product newProduct) {
         String sql = "INSERT INTO product (type, rating, name, createdAt, categoryId) values (?, ?, ?, ?, ?);";
-        String type;
-        int rating;
-        String name;
-        int categoryId;
-        Date createdAt;
-        Object message;
-        int res;
+        String type = newProduct.getType();
+        String name = newProduct.getName();
+        int rating = newProduct.getRating();
+        int categoryId = newProduct.getCategoryId();
+        Date createdAt = newProduct.getCreatedAt();
 
-        try {
-            name = newProduct.getName();
-            if (name.length() == 0) {
-                name = null;
+        if (categoryDAO.findOne(categoryId) != null) {
+            if (createdAt != null) {
+                if ((type.length() > 0) && (rating >= 0) && (rating <= 10) && (name.length() > 0)) {
+                    jdbcTemplate.update(sql, type, rating, name, createdAt, categoryId);
+                    return "Product Added";
+                }
             }
-        } catch (Exception e) {
-            name = null;
         }
-
-
-        try {
-            type = newProduct.getType();
-            if (type.length() == 0) {
-                type = null;
-            }
-        } catch (Exception e) {
-            type = null;
-        }
-
-        try {
-            rating = newProduct.getRating();
-            if (rating < 0 || rating > 10) {
-                rating = -1;
-            }
-        } catch (Exception e) {
-            rating = -1;
-        }
-
-
-        try {
-            categoryId = newProduct.getCategoryId();
-            if (categoryDAO.findOne(categoryId) == null) {
-                categoryId = -1;
-            }
-        } catch (Exception e) {
-            categoryId = -1;
-        }
-
-        try {
-            createdAt = newProduct.getCreatedAt();
-        } catch (Exception e) {
-            createdAt = null;
-        }
-
-
-        if (name != null && type != null && rating != -1 && categoryId != -1 && createdAt != null) {
-            res = jdbcTemplate.update(sql, type, rating, name, createdAt, categoryId);
-        } else {
-            res = 0;
-        }
-
-        if (res == 1) {
-            return "Product Added";
-        } else {
-            return "Error in arguments";
-        }
+        return "Error in arguments";
     }
 
     //FIND ONE BY ID
     public Product findOne(int id) {
         String sql = "SELECT * FROM product WHERE id = ?";
-
         return jdbcTemplate.queryForObject(sql, BeanPropertyRowMapper.newInstance(Product.class), id);
     }
 
     //FILTRE
-    public List<Product> findAllByFilter(String type, String rating, String createdat){
+    public List<Product> findAllByFilter(String type, String rating, String createdat) {
         //A faire : intervalles
         Date date;
         String whereString = "";
@@ -116,35 +67,34 @@ public class ProductDAO {
         int index = 0;
 
 
-        if (type != null && type.length() != 0){
+        if (type != null && type.length() != 0) {
             whereStringTab[index] = "type = ?";
             typeFinal = type;
             index += 1;
         }
 
-        if (rating != null && rating.length() != 0){
-            try{
-                if(Integer.parseInt(rating) >= 0 && Integer.parseInt(rating) <= 10){
+        if (rating != null && rating.length() != 0) {
+            try {
+                if (Integer.parseInt(rating) >= 0 && Integer.parseInt(rating) <= 10) {
                     whereStringTab[index] = "rating = ?";
                     ratingFinal = rating;
-                    index+=1;
+                    index += 1;
                 }
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         }
 
-        if (createdat != null && createdat.length() != 0){
+        if (createdat != null && createdat.length() != 0) {
             SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.FRENCH);
             try {
                 date = formatter.parse(createdat);
-                String year = Integer.toString(date.getYear()+1900);
-                String month = Integer.toString(date.getMonth()+1);
+                String year = Integer.toString(date.getYear() + 1900);
+                String month = Integer.toString(date.getMonth() + 1);
                 String day = Integer.toString(date.getDate());
-                createDateFinal = year+"-"+month+"-"+day+"-";
+                createDateFinal = year + "-" + month + "-" + day + "-";
                 whereStringTab[index] = "createdAt = ?";
-                index+=1;
+                index += 1;
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -152,10 +102,10 @@ public class ProductDAO {
 
         int trouve = 0;
         for (int i = 0; i < whereStringTab.length; i++) {
-            if (whereStringTab[i] != null){
-                trouve+=1;
-                if (trouve == 2 || trouve == 3){
-                    whereString+= " AND ";
+            if (whereStringTab[i] != null) {
+                trouve += 1;
+                if (trouve == 2 || trouve == 3) {
+                    whereString += " AND ";
                 }
                 whereString += whereStringTab[i];
             }
@@ -165,29 +115,26 @@ public class ProductDAO {
 
         String[] finalTab = new String[index];
         int h = 0;
-        if(typeFinal != null){
+        if (typeFinal != null) {
             finalTab[h] = typeFinal;
             h++;
         }
-        if(ratingFinal != null){
+        if (ratingFinal != null) {
             finalTab[h] = ratingFinal;
             h++;
         }
-        if(createDateFinal != null){
+        if (createDateFinal != null) {
             finalTab[h] = createDateFinal;
         }
 
         System.out.println(finalTab[0]);
-        if (finalTab.length == 1){
+        if (finalTab.length == 1) {
             return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class), finalTab[0]);
-        }
-        else if (finalTab.length == 2){
+        } else if (finalTab.length == 2) {
             return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class), finalTab[0], finalTab[1]);
-        }
-        else if(finalTab.length == 3){
+        } else if (finalTab.length == 3) {
             return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class), finalTab[0], finalTab[1], finalTab[2]);
-        }
-        else {
+        } else {
             return null;
         }
     }
