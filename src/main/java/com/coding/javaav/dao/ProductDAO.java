@@ -1,14 +1,20 @@
 package com.coding.javaav.dao;
 
+import com.coding.javaav.ProductController;
 import com.coding.javaav.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 
+import java.awt.print.Pageable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -159,6 +165,18 @@ public class ProductDAO {
     public int deleteProduct(Integer idProduct) {
         String requestSQL = "DELETE FROM product WHERE id=? ;";
         return jdbcTemplate.update(requestSQL, idProduct);
+    }
+
+    // PRODUCT ORDER
+    public List<Product> getAllProduct(Integer pageNo, String sortBy){
+        Pageable pages = PageRequest.of(pageNo, 10, Sort.by(sortBy));
+        Page<Product> pageResult = categoryDAO.listAll();
+
+        if (pageResult.hasContent()){
+            return pageResult.getContent();
+        } else {
+            return new ArrayList<Product>();
+        }
     }
 
 }
