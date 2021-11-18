@@ -58,7 +58,7 @@ public class ProductDAO {
     }
 
     //FILTRE
-    public Product[] findAllByFilter(String type, String rating, String createdat){
+    public List<List<Product>> findAllByFilter(String type, String rating, String createdat){
         List<Product> allProducts = this.listAll();
 
         Date date;
@@ -68,12 +68,13 @@ public class ProductDAO {
         String ratingFinal = null;
         String createDateFinal = null;
         String[] typeTab = new String[0];
-        String[] ratingTab;
+        String[] ratingTab = new String[0];
         String[] createdatTab;
 
-        String[] typeTabFinal;
-        String[] ratingTabFinal;
-        String[] createdatTabFinal;
+        String[] typeTabFinal = new String[0];
+        String[] ratingTabFinal = new String[0];
+        String[] createdatTabFinal = new String[0];
+
         try{
             typeTab = type.split(",");
         }
@@ -90,7 +91,7 @@ public class ProductDAO {
             createdatTab = createdat.split(",");
         }
         catch (Exception e){
-            createdat = null;
+            createdatTab = null;
         }
 
 
@@ -112,164 +113,152 @@ public class ProductDAO {
             }
         }
 
-        if (rating != null && rating.length() != 0){
-            try{
-                if(Integer.parseInt(rating) >= 0 && Integer.parseInt(rating) <= 10){
-                    ratingFinal = rating;
-                    index+=1;
-                }
-            }
-            catch (Exception e){
-                System.out.println(e.getMessage());
-            }
-        }
-
-        if (createdat != null && createdat.length() != 0) {
-            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.FRENCH);
-            try {
-                date = formatter.parse(createdat);
-                String year = Integer.toString(date.getYear() + 1900);
-                String month = Integer.toString(date.getMonth() + 1);
-                String day = Integer.toString(date.getDate());
-                createDateFinal = year+"-0"+month+"-"+day;
-                index+=1;
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-        int numberOfResults = 0;
-        //SI RIEN N'EST NULL
-        if(typeFinal != null && ratingFinal != null && createDateFinal != null){
-            for (Product allProduct : allProducts) {
-                if(allProduct.getType().equals(typeFinal) && Integer.toString(allProduct.getRating()).equals(ratingFinal) && allProduct.getCreatedAt().toString().substring(0, 10).equals(createDateFinal)){
-                    numberOfResults++;
-                }
-            }
-        }
-        //SI TypeFinal est null
-        else if (typeFinal == null && ratingFinal != null && createDateFinal != null) {
-            for (Product allProduct : allProducts) {
-                if(Integer.toString(allProduct.getRating()).equals(ratingFinal) && allProduct.getCreatedAt().toString().substring(0, 10).equals(createDateFinal)){
-                    numberOfResults++;
-                }
-            }
-        }
-        //si ratingFinal est null
-        else if (typeFinal != null && ratingFinal == null && createDateFinal != null) {
-            for (Product allProduct : allProducts) {
-                if(allProduct.getType().equals(typeFinal) && allProduct.getCreatedAt().toString().substring(0, 10).equals(createDateFinal)){
-                    numberOfResults++;
-                }
-            }
-        }
-        //si creatingFinal est null
-        else if (typeFinal != null && ratingFinal != null && createDateFinal == null) {
-            for (Product allProduct : allProducts) {
-                if(allProduct.getType().equals(typeFinal) && Integer.toString(allProduct.getRating()).equals(ratingFinal)){
-                    numberOfResults++;
-                }
-            }
-        }
-        //Si ratingFinal et createDateFinak sont null
-        else if (typeFinal != null && ratingFinal == null && createDateFinal == null) {
-            for (Product allProduct : allProducts) {
-                if(allProduct.getType().equals(typeFinal)){
-                    numberOfResults++;
-                }
-            }
-        }
-        //Si typeFinak et createDateFinal sont null
-        else if (typeFinal == null && ratingFinal != null && createDateFinal == null) {
-            for (Product allProduct : allProducts) {
-                if(Integer.toString(allProduct.getRating()).equals(ratingFinal)){
-                    numberOfResults++;
+        int createdAtCorrect = 0;
+        if (createdatTab != null){
+            for (String s : createdatTab) {
+                if (s != null && s.length() != 0) {
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.FRENCH);
+                    try {
+                        date = formatter.parse(createdat);
+                        String year = Integer.toString(date.getYear() + 1900);
+                        String month = Integer.toString(date.getMonth() + 1);
+                        String day = Integer.toString(date.getDate());
+                        createdAtCorrect++;
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
                 //whereString += whereStringTab[i];
             }
+            createdatTabFinal = new String[createdAtCorrect];
+            createdAtCorrect = 0;
+            for (String s : createdatTab) {
+                if (s != null && s.length() != 0) {
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.FRENCH);
+                    try {
+                        date = formatter.parse(s);
+                        String year = Integer.toString(date.getYear() + 1900);
+                        String month = Integer.toString(date.getMonth() + 1);
+                        String day = Integer.toString(date.getDate());
+                        createDateFinal = year + "-0" + month + "-" + day;
+                        createdatTabFinal[createdAtCorrect] = createDateFinal;
+                        createdAtCorrect++;
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
-        //Si typeFinak et ratingFinal sont null
-        else if (typeFinal == null && ratingFinal == null && createDateFinal != null) {
-            for (Product allProduct : allProducts) {
-                if(allProduct.getCreatedAt().toString().substring(0, 10).equals(createDateFinal)){
-                    numberOfResults++;
+        int ratingCorrect = 0;
+        if(ratingTab.length>0){
+            for (String item : ratingTab) {
+                if (item != null && item.length() != 0){
+                    try{
+                        if(Integer.parseInt(item) >= 0 && Integer.parseInt(item) <= 10){
+                            ratingCorrect++;
+                        }
+                    }
+                    catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+                }
+            }
+            ratingTabFinal = new String[ratingCorrect];
+            ratingCorrect = 0;
+            for (String item : ratingTab) {
+                if (item != null && item.length() != 0){
+                    try{
+                        if(Integer.parseInt(item) >= 0 && Integer.parseInt(item) <= 10){
+                            ratingTabFinal[ratingCorrect] = item;
+                            ratingCorrect++;
+                        }
+                    }
+                    catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
                 }
             }
         }
-
-        if (numberOfResults != 0){
-            Product[] result = new Product[numberOfResults];
-
-
-            int indexFinal = 0;
-            if(typeFinal != null && ratingFinal != null && createDateFinal != null){
-                for (Product allProduct : allProducts) {
-                    if(allProduct.getType().equals(typeFinal) && Integer.toString(allProduct.getRating()).equals(ratingFinal) && allProduct.getCreatedAt().toString().substring(0, 10).equals(createDateFinal)){
-                        result[indexFinal] = allProduct;
-                        indexFinal++;
+        ArrayList<List<Product>> result = new ArrayList<>();
+        if(typeTabFinal.length > 0){
+            for (String s : typeTab) {
+                // Que createdat
+                if(createdat != null && ratingTabFinal.length == 0){
+                    for (String value : createdatTabFinal) {
+                        result.add(getAllByTypeAndDate(s, value));
                     }
                 }
-            }
-            //SI TypeFinal est null
-            else if (typeFinal == null && ratingFinal != null && createDateFinal != null) {
-                for (Product allProduct : allProducts) {
-                    if(Integer.toString(allProduct.getRating()).equals(ratingFinal) && allProduct.getCreatedAt().toString().substring(0, 10).equals(createDateFinal)){
-                        result[indexFinal] = allProduct;
-                        indexFinal++;
+                //Que ratingTabFinal
+                else if(createdat == null && ratingTabFinal.length > 0){
+                    for (String value : ratingTabFinal) {
+                        result.add(getAllByTypeAndRating(s, value));
                     }
                 }
-            }
-            //si ratingFinal est null
-            else if (typeFinal != null && ratingFinal == null && createDateFinal != null) {
-                for (Product allProduct : allProducts) {
-                    if(allProduct.getType().equals(typeFinal) && allProduct.getCreatedAt().toString().substring(0, 10).equals(createDateFinal)){
-                        result[indexFinal] = allProduct;
-                        indexFinal++;
+                // Les Deux
+                else if (createdat != null && ratingTabFinal.length > 0){
+                    for (String value : createdatTabFinal) {
+                        for (String rat : ratingTabFinal) {
+                            result.add(getAllByTypeAndDateAndRating(s, value, rat));
+                        }
                     }
                 }
-            }
-            //si creatingFinal est null
-            else if (typeFinal != null && ratingFinal != null && createDateFinal == null) {
-                for (Product allProduct : allProducts) {
-                    if(allProduct.getType().equals(typeFinal) && Integer.toString(allProduct.getRating()).equals(ratingFinal)){
-                        result[indexFinal] = allProduct;
-                        indexFinal++;
-                    }
+                // Aucun des deux
+                else{
+                    result.add(getAllByType(s));
                 }
             }
-            //Si ratingFinal et createDateFinak sont null
-            else if (typeFinal != null && ratingFinal == null && createDateFinal == null) {
-                for (Product allProduct : allProducts) {
-                    if(allProduct.getType().equals(typeFinal)){
-                        result[indexFinal] = allProduct;
-                        indexFinal++;
-                    }
-                }
-            }
-            //Si typeFinak et createDateFinal sont null
-            else if (typeFinal == null && ratingFinal != null && createDateFinal == null) {
-                for (Product allProduct : allProducts) {
-                    if(Integer.toString(allProduct.getRating()).equals(ratingFinal)){
-                        result[indexFinal] = allProduct;
-                        indexFinal++;
-                    }
-                }
-            }
-            //Si typeFinak et ratingFinal sont null
-            else if (typeFinal == null && ratingFinal == null && createDateFinal != null) {
-                for (Product allProduct : allProducts) {
-                    if(allProduct.getCreatedAt().toString().substring(0, 10).equals(createDateFinal)){
-                        result[indexFinal] = allProduct;
-                        indexFinal++;
-                    }
-                }
-            }
-            return result;
         }
-        else {
-            return null;
+        else if (createdatTabFinal.length > 0){
+            for (String s : createdatTabFinal) {
+                if(ratingTabFinal.length > 0){
+                    for (String value : ratingTabFinal) {
+                        result.add(getAllByDateAndRating(s, value));
+                    }
+                }
+                else{
+                    result.add(getAllByDate(s));
+                }
+            }
         }
+        else{
+            for (String s : ratingTabFinal) {
+                result.add(getAllByRating(s));
+            }
+        }
+        return result;
+    }
+    private List<Product> getAllByRating(String s) {
+        return jdbcTemplate.query("SELECT * FROM product WHERE rating = ?", BeanPropertyRowMapper.newInstance(Product.class), s);
+    }
+    private List<Product> getAllByDate(String s) {
+        return jdbcTemplate.query("SELECT * FROM product WHERE createdAt = ?", BeanPropertyRowMapper.newInstance(Product.class), s);
+    }
+    private List<Product> getAllByDateAndRating(String s,String Rating) {
+        return jdbcTemplate.query("SELECT * FROM product WHERE createdAt = ? AND rating = ?", BeanPropertyRowMapper.newInstance(Product.class), s, Rating);
     }
 
+    private List<Product> getAllByTypeAndRating(String s,String Rating) {
+        return jdbcTemplate.query("SELECT * FROM product WHERE type = ? AND rating = ?", BeanPropertyRowMapper.newInstance(Product.class), s, Rating);
+    }
+
+    private List<Product> getAllByTypeAndDateAndRating(String s, String Date, String Rating) {
+        return jdbcTemplate.query("SELECT * FROM product WHERE type = ?", BeanPropertyRowMapper.newInstance(Product.class), s);
+    }
+
+    private List<Product> getAllByType(String s) {
+        return jdbcTemplate.query("SELECT * FROM product WHERE type = ?", BeanPropertyRowMapper.newInstance(Product.class), s);
+    }
+
+    private List<Product> getAllByTypeAndDate(String type, String date){
+        if (date != null){
+            return jdbcTemplate.query("SELECT * FROM product WHERE type = ? AND createdAt = ?", BeanPropertyRowMapper.newInstance(Product.class), type, date);
+
+        }
+        else{
+            return jdbcTemplate.query("SELECT * FROM product WHERE type = ?", BeanPropertyRowMapper.newInstance(Product.class), type);
+
+        }
+    }
 
     // UPDATE PRODUCT
     public String updateProduct(Product updatedProduct, Integer idProduct) {

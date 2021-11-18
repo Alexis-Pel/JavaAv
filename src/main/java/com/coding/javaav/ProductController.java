@@ -1,31 +1,15 @@
 package com.coding.javaav;
 
 import com.coding.javaav.dao.ProductDAO;
-import com.coding.javaav.models.Category;
 import com.coding.javaav.models.Product;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.coding.javaav.dao.ProductDAO;
-import com.coding.javaav.models.Product;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/products")
@@ -37,12 +21,12 @@ public class ProductController {
     // GET ALL PRODUCT
     // FILTRE
     @GetMapping("")
-    public Product[] index(@RequestParam(required = false) String type, @RequestParam(required = false) String rating, @RequestParam(required = false) String createdat){
+    public Object index(@RequestParam(required = false) String type, @RequestParam(required = false) String rating, @RequestParam(required = false) String createdat){
         if (type == null && rating == null && createdat == null) {
-            return productService.listAll().toArray(new Product[0]);
+            return productService.listAll();
         }
         else{
-            return productService.findAllByFilter(type, rating, createdat);
+            return productService.findAllByFilter(type, rating, createdat).toArray();
         }
     }
 
