@@ -1,6 +1,6 @@
 package com.coding.javaav;
 
-import com.coding.javaav.dao.ProductDAO;
+
 import com.coding.javaav.models.Category;
 import com.coding.javaav.models.Product;
 import org.apache.velocity.exception.ResourceNotFoundException;
@@ -11,6 +11,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import com.coding.javaav.dao.ProductDAO;
+import com.coding.javaav.models.Product;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -29,12 +34,13 @@ public class ProductController {
     private ProductDAO productService;
 
     // GET ALL PRODUCT
-    // SEARCH
+    // FILTRE
     @GetMapping("")
-    public List<Product> index(@RequestParam(required = false) String type, @RequestParam(required = false) String rating, @RequestParam(required = false) String createdat) {
+    public Product[] index(@RequestParam(required = false) String type, @RequestParam(required = false) String rating, @RequestParam(required = false) String createdat){
         if (type == null && rating == null && createdat == null) {
-            return productService.listAll();
-        } else {
+            return productService.listAll().toArray(new Product[0]);
+        }
+        else{
             return productService.findAllByFilter(type, rating, createdat);
         }
     }
