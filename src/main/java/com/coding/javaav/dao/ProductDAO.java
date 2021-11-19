@@ -49,7 +49,12 @@ public class ProductDAO {
     //FIND ONE BY ID
     public Product findOne(int id) {
         String sql = "SELECT * FROM product WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, BeanPropertyRowMapper.newInstance(Product.class), id);
+        try{
+            return jdbcTemplate.queryForObject(sql, BeanPropertyRowMapper.newInstance(Product.class), id);
+        }
+        catch (Exception e){
+            return null;
+        }
     }
 
     //FILTRE
@@ -273,16 +278,9 @@ public class ProductDAO {
     }
 
     // PRODUCT ORDER
-    public List<Product> getAllProduct(Integer pageNo, String sortBy){
-        //Pageable pages = PageRequest.of(pageNo, 10, Sort.by(sortBy));
-        //Page<Product> pageResult = categoryDAO.listAll();
-
-        //if (pageResult.hasContent()){
-            //return pageResult.getContent();
-        //} else {
-          //  return new ArrayList<Product>();
-        //}
-        return null;
+    public List<Product> getAllProduct(Integer start, Integer end){
+        String sql = "SELECT * FROM product LIMIT ? OFFSET ?";
+        return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class), end, start);
     }
 
 }
